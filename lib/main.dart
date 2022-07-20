@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lexread/test_page.dart';
+import 'package:lexread/pages/focus_read_page.dart';
+import 'package:lexread/pages/test_page.dart';
 
 void main() {
   runApp(const MyApp());
