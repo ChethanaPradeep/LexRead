@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lexread/pages/test_page.dart';
+import 'package:lexread/pages/login_page.dart';
+import 'package:lexread/pages/newdoc_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,9 +14,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lex Read',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: Colors.amber.shade300,
+          secondary: Colors.amber.shade200,
+        ),
+        unselectedWidgetColor: Colors.amber.shade800,
+        textTheme: TextTheme(
+          bodyText1: TextStyle(
+              color: Colors.grey[800],
+              fontFamily: "OpenDyslexic",
+              fontSize: 17),
+          bodyText2: TextStyle(
+              color: Colors.grey[800],
+              fontFamily: "OpenDyslexic",
+              fontSize: 15),
+        ),
       ),
-      home: const DocumentListPage(),
+      home: const LoginScreen(),
     );
   }
 }

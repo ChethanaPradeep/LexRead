@@ -48,13 +48,12 @@ class _DocumentListPageState extends State<DocumentListPage> {
                       FilePickerResult? selectedFile = await FilePicker.platform
                           .pickFiles(
                               type: FileType.custom,
-                              allowedExtensions: ['pdf', 'docx', 'doc']);
+                              allowedExtensions: ['pdf']);
                       setState(() {
                         isLoading = true;
                       });
                       if (selectedFile != null &&
-                          (selectedFile.files.first.extension == 'pdf' ||
-                              selectedFile.files.first.extension == 'doc')) {
+                          (selectedFile.files.first.extension == 'pdf')) {
                         final doc = await compute(fileProcess, selectedFile);
                         List<List<List<String>>> tokenizedPages =
                             stringProcessing(doc["text"]);

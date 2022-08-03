@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:lexread/pages/test_page.dart';
+import 'package:lexread/pages/newdoc_list.dart';
 import 'package:page_transition/page_transition.dart';
 
 double roundDouble(double value, int places) {
@@ -60,31 +60,38 @@ class _FocusReadPageState extends State<FocusReadPage> {
     8: const [Color(0xFF00007D), Color(0xFFFFFF00)]
   };
   final Shader linearGradient = LinearGradient(
-    colors: <Color>[Colors.blue.shade900, Colors.red.shade600],
-  ).createShader(const Rect.fromLTWH(0.0, 0.0, 450.0, 70.0));
+    colors: <Color>[
+      Colors.redAccent.shade400,
+      Colors.blue,
+    ],
+  ).createShader(const Rect.fromLTWH(0.0, 0.0, 400.0, 70.0));
 
   @override
   Widget build(BuildContext context) {
     List<List<String>> text = widget.doc["text"][widget.doc["index"]];
     text = formatPage(
         config["newLineIncrement"], config["prevLineIncrement"], text);
-    //text = temp[0];
     config["prevLineIncrement"] = config["newLineIncrement"];
     return SafeArea(
         child: Scaffold(
+      drawerEnableOpenDragGesture: false,
       backgroundColor: config["backgroundColor"],
       key: scaffoldKey,
       appBar: AppBar(
+        backgroundColor: Colors.amber[300],
         titleSpacing: 0.0,
         title: Text(
           widget.doc["title"],
           overflow: TextOverflow.ellipsis,
-          //style: ,
           softWrap: false,
           maxLines: 1,
-          style: const TextStyle(fontSize: 17.0),
+          style: TextStyle(
+            color: Colors.grey[800],
+            fontFamily: 'OpenDyslexic',
+          ),
         ),
         leading: IconButton(
+          color: Colors.grey[800],
           onPressed: () {
             scaffoldKey.currentState?.openDrawer();
           },
@@ -94,10 +101,17 @@ class _FocusReadPageState extends State<FocusReadPage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("(${widget.doc["index"] + 1}/${widget.doc["pageCount"]})"),
+              Text(
+                "(${widget.doc["index"] + 1}/${widget.doc["pageCount"]})",
+                style: TextStyle(
+                  color: Colors.grey[800],
+                  fontFamily: 'OpenDyslexic',
+                ),
+              ),
             ],
           ),
           IconButton(
+            color: Colors.grey[800],
             visualDensity:
                 const VisualDensity(horizontal: -4.0, vertical: -4.0),
             onPressed: () {
@@ -107,6 +121,7 @@ class _FocusReadPageState extends State<FocusReadPage> {
                 Navigator.pushAndRemoveUntil(
                     context,
                     PageTransition(
+                      duration: Duration.zero,
                       type: PageTransitionType.leftToRight,
                       child: FocusReadPage(doc: newDoc, config: config),
                     ),
@@ -116,6 +131,7 @@ class _FocusReadPageState extends State<FocusReadPage> {
             icon: const Icon(Icons.arrow_left_sharp),
           ),
           IconButton(
+              color: Colors.grey[800],
               onPressed: () {
                 if (widget.doc["index"] < widget.doc["pageCount"] - 1) {
                   var newDoc = widget.doc;
@@ -123,6 +139,7 @@ class _FocusReadPageState extends State<FocusReadPage> {
                   Navigator.pushAndRemoveUntil(
                       context,
                       PageTransition(
+                          duration: Duration.zero,
                           type: PageTransitionType.rightToLeft,
                           child: FocusReadPage(
                             doc: newDoc,
@@ -133,11 +150,12 @@ class _FocusReadPageState extends State<FocusReadPage> {
               },
               icon: const Icon(Icons.arrow_right_sharp)),
           IconButton(
+              color: Colors.grey[800],
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DocumentListPage(),
+                      builder: (context) => const ListOfDocs(),
                     ),
                     (route) => false);
               },
@@ -145,165 +163,343 @@ class _FocusReadPageState extends State<FocusReadPage> {
         ],
       ),
       drawer: Drawer(
+        backgroundColor: Colors.amber[200],
         child: Column(
           children: [
-            const Text("Just testing this out"),
-            Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (config["fontSize"] < 45.0) {
-                          config["fontSize"]++;
-                          config["fontSize"] =
-                              roundDouble(config["fontSize"], 1);
-                          // print("FontSize: $fontSize");
-                        }
-                      });
-                    },
-                    child: const Text("Font+")),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (config["fontSize"] > 8.0) {
-                        config["fontSize"]--;
-                        config["fontSize"] = roundDouble(config["fontSize"], 1);
-                        // print("FontSize: $fontSize");
-                      }
-                    });
-                  },
-                  child: const Text("Font-"),
-                )
-              ],
+            AppBar(
+              leadingWidth: 7.0,
+              leading: Container(),
+              title: Text(
+                "Edit Document",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (config["letterSpacing"] < 10.0) {
-                          config["letterSpacing"] =
-                              roundDouble((config["letterSpacing"] + 0.1), 2);
-                          // print("LetterSpacing: $letterSpacing");
-                        }
-                      });
-                    },
-                    child: const Text("Letter+")),
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (config["letterSpacing"] > 0.0) {
-                          config["letterSpacing"] =
-                              roundDouble((config["letterSpacing"] - 0.1), 2);
-                          // print("LetterSpacing: $letterSpacing");
-                        }
-                      });
-                    },
-                    child: const Text("Letter-"))
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  if (config["colorIndex"] < 8) {
-                    config["colorIndex"]++;
-                  } else {
-                    config["colorIndex"] = 1;
-                  }
-                  config["fontColor"] = colorSet[config["colorIndex"]]![0];
-                  config["backgroundColor"] =
-                      colorSet[config["colorIndex"]]![1];
-                });
-              },
-              child: const Text("FType"),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (config["lineSpacing"] < 10.0) {
-                          config["lineSpacing"] =
-                              roundDouble((config["lineSpacing"] + 0.05), 2);
-                          // print("LetterSpacing: $letterSpacing");
-                        }
-                      });
-                    },
-                    child: const Text("Line+")),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (config["lineSpacing"] > 1.5) {
-                        config["lineSpacing"] =
-                            roundDouble((config["lineSpacing"] - 0.05), 2);
-                        // print("LetterSpacing: $letterSpacing");
-                      }
-                    });
-                  },
-                  child: const Text("Line-"),
+            SizedBox(
+              height: MediaQuery.of(context).size.height - 90,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(23, 0, 20, 0),
+                          child: Text(
+                            "Font Size:",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                        ),
+                        Text(
+                          double.parse(config["fontSize"].toString())
+                              .toInt()
+                              .toString(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Slider(
+                        value: config["fontSize"],
+                        max: 45.0,
+                        min: 8.0,
+                        activeColor: Colors.amber[800],
+                        inactiveColor: Colors.amber[400],
+                        //label: config["fontSize"].toString(),
+                        onChanged: (newFontSize) {
+                          setState(() {
+                            config["fontSize"] = roundDouble(newFontSize, 0);
+                          });
+                        }),
+                    const SizedBox(
+                      height: 13,
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(23, 0, 20, 0),
+                              child: Text(
+                                "Word Spacing:",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                            ),
+                            Text(
+                              double.parse(config["wordSpacing"].toString())
+                                  .toInt()
+                                  .toString(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Slider(
+                            value: config["wordSpacing"],
+                            max: 100.0,
+                            min: 0.0,
+                            divisions: 100,
+                            activeColor: Colors.amber[800],
+                            inactiveColor: Colors.amber[400],
+                            //label: config["fontSize"].toString(),
+                            onChanged: (newLetterSpace) {
+                              setState(() {
+                                config["wordSpacing"] =
+                                    roundDouble(newLetterSpace, 1);
+                              });
+                            })
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 13,
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(23, 0, 20, 0),
+                              child: Text(
+                                "Letter Spacing:",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                            ),
+                            Text(
+                              double.parse(config["letterSpacing"].toString())
+                                  .toString(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Slider(
+                            value: config["letterSpacing"],
+                            max: 10.0,
+                            min: 0.0,
+                            divisions: 100,
+                            activeColor: Colors.amber[800],
+                            inactiveColor: Colors.amber[400],
+                            //label: config["fontSize"].toString(),
+                            onChanged: (newLetterSpace) {
+                              setState(() {
+                                config["letterSpacing"] =
+                                    roundDouble(newLetterSpace, 0);
+                              });
+                            })
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 13,
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(23, 0, 20, 0),
+                              child: Text(
+                                "Line Spacing:",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                            ),
+                            Text(
+                              double.parse((config["lineSpacing"]).toString())
+                                  .toStringAsFixed(2),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Slider(
+                            value: config["lineSpacing"],
+                            max: 10.00,
+                            min: 1.70,
+                            divisions: 166,
+                            activeColor: Colors.amber[800],
+                            inactiveColor: Colors.amber[400],
+                            //label: config["fontSize"].toString(),
+                            onChanged: (newLineSpace) {
+                              setState(() {
+                                config["lineSpacing"] =
+                                    roundDouble(newLineSpace, 2);
+                              });
+                            })
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(23, 0, 20, 0),
+                              child: Text(
+                                "Paragraph Spacing:",
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                            ),
+                            Text(
+                              double.parse(
+                                      config["newLineIncrement"].toString())
+                                  .toInt()
+                                  .toString(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Slider(
+                            value: double.parse(
+                                config["newLineIncrement"].toString()),
+                            max: 10.0,
+                            min: 0.0,
+                            activeColor: Colors.amber[800],
+                            inactiveColor: Colors.amber[400],
+                            onChanged: (newLineIncrement) {
+                              setState(() {
+                                config["newLineIncrement"] =
+                                    newLineIncrement.toInt();
+                              });
+                            })
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 22,
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(23, 0, 20, 0),
+                          child: Text(
+                            "Color Sets:",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 60,
+                          height: 30,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (config["colorIndex"] > 1) {
+                                  config["colorIndex"]--;
+                                } else {
+                                  config["colorIndex"] = 8;
+                                }
+                                if (!config["isShaderEnabled"]) {
+                                  config["fontColor"] =
+                                      colorSet[config["colorIndex"]]![0];
+                                }
+                                config["backgroundColor"] =
+                                    colorSet[config["colorIndex"]]![1];
+                              });
+                            },
+                            child: Icon(
+                              Icons.keyboard_arrow_left_outlined,
+                              color: Colors.grey[800],
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 60,
+                          height: 30,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                if (config["colorIndex"] < 8) {
+                                  config["colorIndex"]++;
+                                } else {
+                                  config["colorIndex"] = 1;
+                                }
+                                config["fontColor"] =
+                                    colorSet[config["colorIndex"]]![0];
+                                config["backgroundColor"] =
+                                    colorSet[config["colorIndex"]]![1];
+                              });
+                            },
+                            child: Icon(
+                              Icons.keyboard_arrow_right_outlined,
+                              color: Colors.grey[800],
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 22,
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(23, 0, 20, 0),
+                          child: Text(
+                            "Block Highlighting:",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                        ),
+                        Checkbox(
+                          checkColor: Colors.amber[200],
+                          activeColor: Colors.amber[800],
+                          value: config["isBlockHighlight"],
+                          onChanged: (value) {
+                            setState(() {
+                              config["isBlockHighlight"] =
+                                  !config["isBlockHighlight"];
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 13,
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(23, 0, 30, 0),
+                          child: Text(
+                            "Cognitive Helper:",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                        ),
+                        Checkbox(
+                          checkColor: Colors.amber[200],
+                          activeColor: Colors.amber[800],
+                          value: config["isShaderEnabled"],
+                          onChanged: (value) {
+                            setState(() {
+                              config["isShaderEnabled"] =
+                                  !config["isShaderEnabled"];
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 13,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        if (config["newLineIncrement"] < 10) {
-                          config["newLineIncrement"] =
-                              config["newLineIncrement"] + 1;
-                          // print("LetterSpacing: $letterSpacing");
-                        }
-                      });
-                    },
-                    child: const Text("newLineCount+")),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (config["newLineIncrement"] > 0) {
-                        config["newLineIncrement"] =
-                            config["newLineIncrement"] - 1;
-                        // print("LetterSpacing: $letterSpacing");
-                      }
-                    });
-                  },
-                  child: const Text("newLineIncrement-"),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  config["isBlockHighlight"] = !config["isBlockHighlight"];
-                });
-              },
-              child: const Text("BlockHighlight"),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  config["isShaderEnabled"] = !config["isShaderEnabled"];
-                });
-              },
-              child: const Text("Cognitive Helper"),
+              ),
             ),
           ],
         ),
@@ -325,7 +521,7 @@ class _FocusReadPageState extends State<FocusReadPage> {
                               color: Colors.red,
                               width: 2.0 // red as border color
                               )
-                          : Border.all(width: 0, color: Colors.white),
+                          : null,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
